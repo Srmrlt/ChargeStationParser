@@ -1,1 +1,1 @@
-from get_page import get_page
+from .get_page import get_page
