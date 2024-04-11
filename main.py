@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import datetime
 import time
 
@@ -21,6 +22,7 @@ def job_function():
     stations_status = parse_status(get_page(url))
     add_data_to_file(stations_status)
     print(f"{datetime.now()}: Выполняю задачу...")
+    sys.stdout.flush()
 
 
 def run_scheduler():

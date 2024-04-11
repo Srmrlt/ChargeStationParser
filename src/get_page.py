@@ -21,12 +21,12 @@ def get_page(url: str, debug: bool = False) -> str:
 
 
 def _write_html(response: str):
-    with open("index.html", "w", encoding="utf-8") as file:
+    with open("data/index.html", "w", encoding="utf-8") as file:
         file.write(response)
 
 
 def _read_html() -> str:
-    with open("index.html", "r", encoding="utf-8") as file:
+    with open("data/index.html", "r", encoding="utf-8") as file:
         return file.read()
 
 
