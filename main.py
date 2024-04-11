@@ -5,20 +5,20 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
 
-from parsing import parse_data, parse_status
-from save_to_csv import add_data_to_file, save_new_file
-from utils import get_data
+from src.parsing import parse_data, parse_status
+from src.save_to_csv import add_data_to_file, save_new_file
+from src import get_page
 
 load_dotenv()
 url = os.getenv("URL")
 
-page = get_data(url)
+page = get_page(url)
 stations_data = parse_data(page)
 save_new_file(stations_data)
 
 
 def job_function():
-    stations_status = parse_status(page)
+    stations_status = parse_status(get_page(url))
     add_data_to_file(stations_status)
     print(f"{datetime.now()}: Выполняю задачу...")
 
