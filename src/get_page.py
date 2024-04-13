@@ -2,31 +2,35 @@ import os
 
 import requests
 
+from src import print_log
 
-def get_page(url: str, debug: bool = False) -> str:
+
+def get_page(url: str) -> str:
     """
     Функция для тестирования и отладки. Снижает количество запросов к сайту для избежания бана.
     Сохраняет результат запроса в файл index.html и дальнейшие запросы получения данных перенаправляются в этот файл.
     :param url:
-    :param debug:
     :return:
     """
+    debug = os.getenv("DEBUG", False)
+    file_path = "index.html"
     if debug:
-        if not os.path.exists("../index.html"):
+        print_log("Режим DEBUG активен!!!")
+        if not os.path.exists(file_path):
             data = _load_page(url)
-            _write_html(data)
-        return _read_html()
+            _write_html(data, file_path)
+        return _read_html(file_path)
 
     return _load_page(url)
 
 
-def _write_html(response: str):
-    with open("data/index.html", "w", encoding="utf-8") as file:
+def _write_html(response: str, file_path: str):
+    with open(file_path, "w", encoding="utf-8") as file:
         file.write(response)
 
 
-def _read_html() -> str:
-    with open("data/index.html", "r", encoding="utf-8") as file:
+def _read_html(file_path: str) -> str:
+    with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
 
 
