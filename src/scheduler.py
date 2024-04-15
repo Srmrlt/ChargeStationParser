@@ -1,22 +1,17 @@
 import time
-from datetime import datetime
 
-from apscheduler.schedulers.background import BackgroundScheduler
+import schedule
 
 
-def run_scheduler(job_function):
-    scheduler = BackgroundScheduler()
-
-    # Добавляем задачу с немедленным первым запуском и повторением каждую минуту
-    scheduler.add_job(job_function, 'interval', minutes=1, next_run_time=datetime.now())
-    scheduler.start()
+def run_scheduler(job):
+    schedule.every().monday.do(job.change_file_name)
+    schedule.every().minute.do(job.job_function)
 
     try:
         # Этот бесконечный цикл позволяет основному потоку оставаться активным,
         # чтобы немедленно реагировать на Ctrl+C.
         while True:
-            time.sleep(1)
+            schedule.run_pending()
+            time.sleep(5)
     except (KeyboardInterrupt, SystemExit):
         print("Остановка планировщика...")
-        # Останавливаем планировщик и ждем завершения всех запланированных заданий.
-        scheduler.shutdown()

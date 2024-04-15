@@ -11,15 +11,25 @@ from src.scheduler import run_scheduler
 load_dotenv()
 
 
-def job_function():
-    url = os.getenv("URL")
-    year_week = datetime.now().strftime('%Y-%W')
-    file_path = f"data/charge_{year_week}.csv"  # Имя файла обновляется каждую неделю
-    page = get_page(url)
-    stations_data = parse_data(page)
-    save_to_csv(stations_data, file_path=file_path)
-    print_log(f"{datetime.now()}: Выполняю задачу...")
+class Job:
+    def __init__(self):
+        self.file_path = None
+        self.change_file_name()
+        self.job_function()
+
+    def job_function(self):
+        url = os.getenv("URL")
+        page = get_page(url)
+        stations_data = parse_data(page)
+        save_to_csv(stations_data, file_path=self.file_path)
+        print_log(f"{datetime.now()}: Выполняю задачу...")
+
+    def change_file_name(self):
+        date = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        self.file_path = f"data/charge_{date}.csv"
+        print_log(f"Новое имя файла: {self.file_path}")
 
 
 if __name__ == "__main__":
-    run_scheduler(job_function)
+    job = Job()
+    run_scheduler(job)
