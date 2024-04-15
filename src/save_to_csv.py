@@ -1,5 +1,4 @@
 import os
-
 from datetime import datetime
 
 import pandas
@@ -24,11 +23,10 @@ def _add_data_to_file(data: dict, file_path: str, timestamp: str):
     for index, new_row in new_data_df.iterrows():
         # Поиск строки в существующем DataFrame, где значения 'old_data_df' совпадают
         # с соответствующими значениями из текущей новой строки.
-        existing_row = old_data_df[(old_data_df['station_number'] == new_row['station_number']) &
-                                   (old_data_df['station_address'] == new_row['station_address']) &
-                                   (old_data_df['station_name'] == new_row['station_name']) &
-                                   (old_data_df['station_type'] == new_row['station_type'])
-        ]
+        existing_row = old_data_df[(old_data_df['station_number'] == new_row['station_number'])
+                                   & (old_data_df['station_address'] == new_row['station_address'])
+                                   & (old_data_df['station_name'] == new_row['station_name'])
+                                   & (old_data_df['station_type'] == new_row['station_type'])]
 
         if not existing_row.empty:
             old_data_df.at[existing_row.index[0], timestamp] = new_row[timestamp]

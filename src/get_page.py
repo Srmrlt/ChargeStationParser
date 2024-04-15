@@ -2,7 +2,7 @@ import os
 
 import requests
 
-from src import print_log
+from src.utils import print_log
 
 
 def get_page(url: str) -> str:
