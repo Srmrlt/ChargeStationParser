@@ -20,9 +20,10 @@ class Job:
     def job_function(self):
         url = os.getenv("URL")
         page = get_page(url)
-        stations_data = parse_data(page)
-        save_to_csv(stations_data, file_path=self.file_path)
-        print_log(f"{datetime.now()}: Выполняю задачу...")
+        if page:
+            stations_data = parse_data(page)
+            save_to_csv(stations_data, file_path=self.file_path)
+            print_log(f"{datetime.now()}: Выполняю задачу...")
 
     def change_file_name(self):
         date = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
