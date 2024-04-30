@@ -1,14 +1,18 @@
 import os
 from datetime import datetime
+import logging
 
 from dotenv import load_dotenv
 
-from src import get_page, print_log
+import src
+
+from src import web_loader, print_log
 from src.parsing import parse_data
 from src.save_to_csv import save_to_csv
 from src.scheduler import run_scheduler
 
 load_dotenv()
+logging.basicConfig(level=logging.INFO)
 
 
 class Job:
@@ -19,7 +23,7 @@ class Job:
 
     def job_function(self):
         url = os.getenv("URL")
-        page = get_page(url)
+        page = src.WebPageLoader(url).fetch_page()
         if page:
             stations_data = parse_data(page)
             save_to_csv(stations_data, file_path=self.file_path)

@@ -1,2 +1,2 @@
-from .get_page import get_page
+from .web_loader import WebPageLoader
 from .utils import print_log
