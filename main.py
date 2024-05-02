@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 
 import src
 
-from src import web_loader, print_log
-from src.parsing import parse_data
+from src import print_log
 from src.save_to_csv import save_to_csv
 from src.scheduler import run_scheduler
 
@@ -25,8 +24,8 @@ class Job:
         url = os.getenv("URL")
         page = src.WebPageLoader(url).fetch_page()
         if page:
-            stations_data = parse_data(page)
-            save_to_csv(stations_data, file_path=self.file_path)
+            stations_data = src.StationDataParser(page).parse_data()
+            # save_to_csv(stations_data, file_path=self.file_path)
             print_log(f"{datetime.now()}: Выполняю задачу...")
 
     def change_file_name(self):
