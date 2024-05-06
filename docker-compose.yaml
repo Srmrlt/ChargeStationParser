@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   parser:
     image: sergei1m/charge_parser:latest
@@ -10,3 +8,22 @@ services:
       - ./data:/app/data
     env_file:
       - .env
+
+  database:
+    container_name: kz_database
+    image: timescale/timescaledb:latest-pg16
+    env_file:
+      - .env
+    volumes:
+      - kz_db:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  kz_db:

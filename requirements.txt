@@ -4,3 +4,10 @@ python-dotenv
 lxml
 pandas
 schedule
+
+# Database
+pydantic-settings
+SQLAlchemy
+psycopg2-binary
+asyncpg
+alembic
