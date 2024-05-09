@@ -15,8 +15,10 @@ class Settings(BaseSettings):
         """
         Generates a database connection URL for database libraries from the given settings.
         """
-        return (f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-                f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}")
+        return (
+            f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+            f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
+        )
 
 
 settings = Settings(
@@ -24,5 +26,5 @@ settings = Settings(
     POSTGRES_PASSWORD=os.getenv("POSTGRES_PASSWORD"),
     DB_HOST=os.getenv("DB_HOST"),
     DB_PORT=int(os.getenv("DB_PORT")),
-    POSTGRES_DB=os.getenv("POSTGRES_DB")
+    POSTGRES_DB=os.getenv("POSTGRES_DB"),
 )
