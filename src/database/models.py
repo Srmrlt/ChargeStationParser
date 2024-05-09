@@ -25,27 +25,27 @@ class StationInfoOrm(Base):
     name: Mapped[str] = Column(String)
     created_at: Mapped[created_at]
 
-    station_type: Mapped[list['StationTypeOrm']] = relationship(
+    station_socket: Mapped[list['StationSocketOrm']] = relationship(
         back_populates='station_info',
     )
 
 
-class StationTypeOrm(Base):
-    __tablename__ = 'station_type'
+class StationSocketOrm(Base):
+    __tablename__ = 'station_socket'
 
     id: Mapped[intpk]
     station_id: Mapped[int] = mapped_column(ForeignKey('station_info.id', ondelete='CASCADE'))
-    type: Mapped[str] = Column(String)
+    socket: Mapped[str] = Column(String)
     power: Mapped[int] = Column(Integer)
     created_at: Mapped[created_at]
 
-    __table_args__ = (UniqueConstraint('station_id', 'type', name='station_id_type_unique'),)
+    __table_args__ = (UniqueConstraint('station_id', 'socket', name='station_id_socket_unique'),)
 
     station_info: Mapped['StationInfoOrm'] = relationship(
-        back_populates='station_type'
+        back_populates='station_socket'
     )
     station_status: Mapped[list['StationStatusOrm']] = relationship(
-        back_populates='station_type',
+        back_populates='station_socket',
     )
 
 
@@ -53,10 +53,10 @@ class StationStatusOrm(Base):
     __tablename__ = 'station_status'
 
     id: Mapped[intpk]
-    station_type_id: Mapped[int] = mapped_column(ForeignKey('station_type.id', ondelete='CASCADE'))
+    station_socket_id: Mapped[int] = mapped_column(ForeignKey('station_socket.id', ondelete='CASCADE'))
     status: Mapped[str_256]
     timestamp: Mapped[datetime.datetime]
 
-    station_type: Mapped['StationTypeOrm'] = relationship(
+    station_socket: Mapped['StationSocketOrm'] = relationship(
         back_populates='station_status'
     )

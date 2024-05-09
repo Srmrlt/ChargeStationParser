@@ -1,7 +1,7 @@
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy import select
 from .database import engine, session_factory, Base
-from .models import StationInfoOrm, StationTypeOrm, StationStatusOrm
+from .models import StationInfoOrm, StationSocketOrm, StationStatusOrm
 
 
 class OrmMethods:
@@ -48,32 +48,32 @@ class StationOrmMethod:
     async def add_stations(self, station_list):
         async with session_factory() as session:
             for station in station_list:
-                await self._upsert(session, StationInfoOrm, station["StationInfo"], ["number"])
+                await self._upsert(session, StationInfoOrm, station["info"], ["number"])
 
-                station["StationType"]["station_id"] = await self._get_id(
+                station["socket"]["station_id"] = await self._get_id(
                     session,
                     StationInfoOrm,
-                    StationInfoOrm.number == station["StationInfo"]["number"],
+                    StationInfoOrm.number == station["info"]["number"],
                 )
-                await self._upsert(session, StationTypeOrm, station["StationType"], ["station_id", "type"])
+                await self._upsert(session, StationSocketOrm, station["socket"], ["station_id", "socket"])
 
-                station["StationStatus"]["station_type_id"] = await self._get_id(
+                station["status"]["station_type_id"] = await self._get_id(
                     session,
-                    StationTypeOrm,
-                    StationTypeOrm.station_id == station["StationType"]["station_id"],
-                    StationTypeOrm.type == station["StationType"]['type']
+                    StationSocketOrm,
+                    StationSocketOrm.station_id == station["socket"]["station_id"],
+                    StationSocketOrm.socket == station["socket"]['type']
                 )
-                await self._insert(session, StationStatusOrm, station["StationStatus"])
+                await self._insert(session, StationStatusOrm, station["status"])
 
             await session.commit()
 
     @staticmethod
     def _conditions(station, info_type):
-        if info_type == "StationInfo":
-            return StationInfoOrm.number == station["StationInfo"]["number"]
-        elif info_type == "StationType":
-            return (StationTypeOrm.station_id == station["StationType"]["station_id"],
-                    StationTypeOrm.type == station["StationType"]["type"])
+        if info_type == "info":
+            return StationInfoOrm.number == station["info"]["number"]
+        elif info_type == "socket":
+            return (StationSocketOrm.station_id == station["socket"]["station_id"],
+                    StationSocketOrm.socket == station["socket"]["socket"])
 
     @staticmethod
     async def _upsert(session, model, data: dict, unique: list[str]):
