@@ -1,39 +1,33 @@
-import os
-from datetime import datetime
+import asyncio
 import logging
+import os
 
 from dotenv import load_dotenv
 
 import src
 
-from src import print_log
-from src.save_to_csv import save_to_csv
-from src.scheduler import run_scheduler
-
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-class Job:
-    def __init__(self):
-        self.file_path = None
-        self.change_file_name()
-        self.job_function()
+async def job_function():
+    """
+    Asynchronously fetches a web page, parses station data from it, and updates the database with the new data.
 
-    def job_function(self):
-        url = os.getenv("URL")
-        page = src.WebPageLoader(url).fetch_page()
-        if page:
-            stations_data = src.StationDataParser(page).parse_data()
-            # save_to_csv(stations_data, file_path=self.file_path)
-            print_log(f"{datetime.now()}: Выполняю задачу...")
-
-    def change_file_name(self):
-        date = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        self.file_path = f"data/charge_{date}.csv"
-        print_log(f"Новое имя файла: {self.file_path}")
+    This function performs the following steps:
+    1. Retrieves the URL from environment variables.
+    2. Uses a web page loader to fetch the page at the given URL.
+    3. If the page is successfully fetched, it parses the station data from the page.
+    4. Adds the parsed station data to the database using an ORM method designed for station data.
+    """
+    url = os.getenv("URL")
+    page = src.WebPageLoader(url).fetch_page()
+    if page:
+        stations_data = src.StationDataParser(page).parse_data()
+        await src.StationOrmMethod().add_stations(stations_data)
+        logger.debug("In progress ...")
 
 
 if __name__ == "__main__":
-    job = Job()
-    run_scheduler(job)
+    asyncio.run(src.run_scheduler(job_function))

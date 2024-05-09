@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import BinaryExpression
 
-from .database import Base, engine, session_factory, session_manager
+from .database import Base, engine, session_factory
 from .models import StationInfoOrm, StationSocketOrm, StationStatusOrm
 
 StationOrmType: TypeAlias = Type[StationInfoOrm | StationSocketOrm | StationStatusOrm]
@@ -58,33 +58,34 @@ class OrmMethods:
 
 
 class StationOrmMethod:
-    @session_manager
-    async def add_stations(self, session: AsyncSession, station_list: List[Dict[str, Dict[str, Any]]]) -> None:
+
+    async def add_stations(self, station_list: List[Dict[str, Dict[str, Any]]]) -> None:
         """
         Adds or updates station entries in the database. Utilizes upsert operations to ensure that
         station data is inserted or updated based on unique constraints.
 
         Args:
-            session: An AsyncSession instance provided by the session manager.
             station_list: A list of dictionaries describing the station data.
         """
-        for station in station_list:
-            await self._upsert_data(session, StationInfoOrm, station["info"], ["number"])
+        async with session_factory() as session:
+            for station in station_list:
+                await self._upsert_data(session, StationInfoOrm, station["info"], ["number"])
 
-            station["socket"]["station_id"] = await self._fetch_id(
-                session,
-                StationInfoOrm,
-                StationInfoOrm.number == station["info"]["number"],
-            )
-            await self._upsert_data(session, StationSocketOrm, station["socket"], ["station_id", "socket"])
+                station["socket"]["station_id"] = await self._fetch_id(
+                    session,
+                    StationInfoOrm,
+                    StationInfoOrm.number == station["info"]["number"],
+                )
+                await self._upsert_data(session, StationSocketOrm, station["socket"], ["station_id", "socket"])
 
-            station["status"]["station_type_id"] = await self._fetch_id(
-                session,
-                StationSocketOrm,
-                StationSocketOrm.station_id == station["socket"]["station_id"],
-                StationSocketOrm.socket == station["socket"]["type"],
-            )
-            await self._insert_data(session, StationStatusOrm, station["status"])
+                station["status"]["station_socket_id"] = await self._fetch_id(
+                    session,
+                    StationSocketOrm,
+                    StationSocketOrm.station_id == station["socket"]["station_id"],
+                    StationSocketOrm.socket == station["socket"]["socket"],
+                )
+                await self._insert_data(session, StationStatusOrm, station["status"])
+            await session.commit()
 
     @staticmethod
     def _conditions(
