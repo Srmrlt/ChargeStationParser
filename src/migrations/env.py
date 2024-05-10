@@ -1,13 +1,11 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 from src.database.config import settings
 from src.database.database import Base
-from src.database.models import StationStatusOrm, StationSocketOrm, StationInfoOrm  # noqa
+from src.database.models import StationInfoOrm, StationSocketOrm, StationStatusOrm  # noqa
 
 config = context.config
 
