@@ -1,7 +1,7 @@
 import copy
 import datetime
 import logging
-from typing import Any, Iterator, Tuple
+from typing import Any, Tuple
 
 import bs4
 
@@ -113,7 +113,7 @@ class StationDataParser:
         return TextDataExtractor(name_).extract_data(pattern=r", (\d+(\.\d+)?) kWh", data_type=float)
 
     @staticmethod
-    def _extract_status_and_socket_types(station_row: bs4.element.Tag) -> Iterator[Tuple[str, str]]:
+    def _extract_status_and_socket_types(station_row: bs4.element.Tag):
         """
         Extracts the status and type of sockets available at the station from the given HTML row.
 
@@ -124,10 +124,10 @@ class StationDataParser:
             Tuple[str, str]: Each tuple contains the status and the type of socket.
         """
         status_socket_elements = station_row.find("td", class_="text-center status col-2").find_all("span")
-        return (
-            TextDataExtractor(status_socket.text).split_at_word(word_number=0)
-            for status_socket in status_socket_elements
-        )
+        for num, status_socket in enumerate(status_socket_elements, 1):
+            status, socket = TextDataExtractor(status_socket.text).split_at_word(word_index=0)
+            socket = f"{num}: {socket}"
+            yield status, socket
 
     def print_html_structure(self):
         """

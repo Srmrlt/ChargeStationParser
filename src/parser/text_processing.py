@@ -45,21 +45,21 @@ class TextDataExtractor:
         self.data = re.sub(pattern, "", self.data).strip()
         return self.data
 
-    def split_at_word(self, word_number: int) -> Tuple[str | None, str]:
+    def split_at_word(self, word_index: int) -> Tuple[str | None, str]:
         """
         Splits the string into two parts at the specified word index. The first part includes the text
          up to and including the word at the specified index, and the second part contains the text after that word.
 
-        :param word_number: The 1-based index of the word at which to split the text.
+        :param word_index: The 1-based index of the word at which to split the text.
         :return: A tuple containing:
                  - The text up to and including the specified word. None if the index exceeds the number of words.
                  - The remaining text after the specified word.
         """
         words = self.data.split()
-        if len(words) < word_number + 1:
+        if len(words) < word_index + 1:
             return None, self.data
-        text_before = " ".join(words[:word_number + 1])
-        text_after = " ".join(words[word_number + 1:])
+        text_before = " ".join(words[:word_index + 1])
+        text_after = " ".join(words[word_index + 1:])
 
         return text_before, text_after
 
