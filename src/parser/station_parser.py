@@ -67,7 +67,7 @@ class StationDataParser:
 
         for el in self._extract_status_and_socket_types(station_row):
             station = copy.deepcopy(station_)
-            station["status"]["status"], station["socket"]["socket"] = el
+            station["status"]["status"], station["socket"]["socket"], station["socket"]["charger_port"] = el
             yield station
 
     @staticmethod
@@ -126,8 +126,7 @@ class StationDataParser:
         status_socket_elements = station_row.find("td", class_="text-center status col-2").find_all("span")
         for num, status_socket in enumerate(status_socket_elements, 1):
             status, socket = TextDataExtractor(status_socket.text).split_at_word(word_index=0)
-            socket = f"{num}: {socket}"
-            yield status, socket
+            yield status, socket, num
 
     def print_html_structure(self):
         """

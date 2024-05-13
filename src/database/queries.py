@@ -76,12 +76,14 @@ class StationOrmMethod:
                     StationInfoOrm,
                     StationInfoOrm.number == station["info"]["number"],
                 )
-                await self._upsert_data(session, StationSocketOrm, station["socket"], ["station_id", "socket"])
+                await self._upsert_data(session, StationSocketOrm, station["socket"],
+                                        ["station_id", "charger_port", "socket"])
 
                 station["status"]["station_socket_id"] = await self._fetch_id(
                     session,
                     StationSocketOrm,
                     StationSocketOrm.station_id == station["socket"]["station_id"],
+                    StationSocketOrm.charger_port == station["socket"]["charger_port"],
                     StationSocketOrm.socket == station["socket"]["socket"],
                 )
                 await self._insert_data(session, StationStatusOrm, station["status"])

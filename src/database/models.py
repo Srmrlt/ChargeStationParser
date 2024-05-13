@@ -3,7 +3,7 @@ from typing import Annotated
 
 from sqlalchemy import DateTime, ForeignKey, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.schema import PrimaryKeyConstraint, UniqueConstraint
+from sqlalchemy.schema import Index, PrimaryKeyConstraint, UniqueConstraint
 
 from .database import Base
 
@@ -26,10 +26,13 @@ class StationInfoOrm(Base):
 
 class StationSocketOrm(Base):
     __tablename__ = "station_socket"
-    __table_args__ = (UniqueConstraint("station_id", "socket", name="station_id_socket_unique"),)
+    __table_args__ = (
+        UniqueConstraint("station_id", "charger_port", "socket", name="station_id_charger_port_socket_unique"),
+    )
 
     id: Mapped[intpk]
     station_id: Mapped[int] = mapped_column(ForeignKey("station_info.id", ondelete="CASCADE"))
+    charger_port: Mapped[int]
     socket: Mapped[str]
     power: Mapped[int]
     created_at: Mapped[created_at]
@@ -42,6 +45,7 @@ class StationStatusOrm(Base):
     __tablename__ = "station_status"
     __table_args__ = (
         PrimaryKeyConstraint("station_socket_id", "timestamp"),
+        Index("station_status_timestamp_idx", "timestamp"),
     )
 
     station_socket_id: Mapped[int] = mapped_column(ForeignKey("station_socket.id", ondelete="CASCADE"))
