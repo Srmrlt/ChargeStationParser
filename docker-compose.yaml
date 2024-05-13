@@ -8,6 +8,8 @@ services:
       - ./data:/app/data
     env_file:
       - .env
+    depends_on:
+      - database
 
   database:
     container_name: kz_database
@@ -27,3 +29,4 @@ services:
 
 volumes:
   kz_db:
+    external:

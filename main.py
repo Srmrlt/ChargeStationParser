@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import src
 
 load_dotenv()
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 

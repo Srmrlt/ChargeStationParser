@@ -7,7 +7,7 @@ from .config import settings
 
 engine = create_async_engine(
     url=settings.db_url,
-    echo=True,
+    echo=False,
 )
 
 session_factory = async_sessionmaker(engine, expire_on_commit=False)
